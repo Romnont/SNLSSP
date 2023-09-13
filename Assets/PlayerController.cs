@@ -4,25 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public CharacterController characterController;
+    public float speed = 6;
 
-
-    // Start is called before the first frame update
-    public float moveSpeed = 2f;
-    public float maxSpeed = 5f;
-
-
-    public float contador = 0f;
-    Transform thistrans;
-    private Rigidbody rb3d;
-    private Animator anim;
-    private SpriteRenderer spr;
-    private PolygonCollider2D box;
-    private bool jump;
-    private bool doublejump;
-    private bool movement = true;
-
-    private GameObject lifebar;
-    AudioSource Fuente, CamaraSound;
 
 
     // Start is called before the first frame update
@@ -31,37 +15,21 @@ public class PlayerController : MonoBehaviour
         
     }
 
+
+
     // Update is called once per frame
     void Update()
     {
-        
+        Move();
     }
 
-    void FixedUpdate()
+    private void Move()
     {
+        float horizontalMove = Input.GetAxis("Horizontal");
+        float verticalMove = Input.GetAxis("Vertical");
 
-
-        Vector3 fixedVelocity = rb3d.velocity;
-        fixedVelocity.x *= 0.75f;
-
-
-
-        float h = Input.GetAxisRaw("Horizontal");
-        if (!movement) h = 0;
-
-        rb3d.AddForce(Vector2.right * moveSpeed * h);
-        float LimitedSpeed = Mathf.Clamp(rb3d.velocity.x, -maxSpeed, maxSpeed);
-        rb3d.velocity = new Vector2(LimitedSpeed, rb3d.velocity.y);
-
-        if (h > 0.1f)
-        {
-            transform.localScale = new Vector3(1f, 1f, 1f);
-        }
-
-        if (h < -0.1f)
-        {
-            transform.localScale = new Vector3(-1f, 1f, 1f);
-        }
-
+        Vector3 move = transform.forward * verticalMove + transform.right * horizontalMove;
+        characterController.Move(speed * Time.deltaTime * move);
     }
+
 }
