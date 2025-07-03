@@ -12,3 +12,8 @@ config_version=5
 
 config/name="NJ"
 config/features=PackedStringArray("4.4", "Forward Plus")
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
