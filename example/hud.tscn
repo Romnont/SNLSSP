@@ -1,0 +1,104 @@
+[gd_scene load_steps=5 format=3 uid="uid://cyahc5hcbw8mg"]
+
+[ext_resource type="FontFile" uid="uid://ddac6m1u0tilt" path="res://fonts/Xolonium-Regular.ttf" id="1_37p78"]
+
+[sub_resource type="GDScript" id="GDScript_64ctp"]
+resource_name = "hud.gd"
+script/source = "extends CanvasLayer
+
+# Notifies `Main` node that the button has been pressed
+signal start_game
+
+func show_message(text):
+	$Message.text = text
+	$Message.show()
+	$MessageTimer.start()
+
+func show_game_over():
+	show_message(\"Game Over\")
+	# Wait until the MessageTimer has counted down.
+	await $MessageTimer.timeout
+
+	$Message.text = \"Dodge the Creeps!\"
+	$Message.show()
+	# Make a one-shot timer and wait for it to finish.
+	await get_tree().create_timer(1.0).timeout
+	$StartButton.show()
+	
+func update_score(score):
+	$ScoreLabel.text = str(score)
+	
+func _on_start_button_pressed() -> void:
+	$StartButton.hide()
+	start_game.emit()
+	
+func _on_message_timer_timeout() -> void:
+	$Message.hide()
+"
+
+[sub_resource type="InputEventKey" id="InputEventKey_37p78"]
+device = -1
+keycode = 4194309
+
+[sub_resource type="Shortcut" id="Shortcut_64ctp"]
+events = [SubResource("InputEventKey_37p78")]
+
+[node name="HUD" type="CanvasLayer"]
+script = SubResource("GDScript_64ctp")
+
+[node name="ScoreLabel" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -22.5
+offset_right = 22.5
+offset_bottom = 78.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("1_37p78")
+theme_override_font_sizes/font_size = 64
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Message" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -120.0
+offset_right = 240.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("1_37p78")
+theme_override_font_sizes/font_size = 64
+text = "Dodge the Creeps!"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="StartButton" type="Button" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -122.0
+offset_top = -140.0
+offset_right = 122.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("1_37p78")
+theme_override_font_sizes/font_size = 64
+shortcut = SubResource("Shortcut_64ctp")
+text = "START"
+
+[node name="MessageTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="timeout" from="MessageTimer" to="." method="_on_message_timer_timeout"]

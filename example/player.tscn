@@ -1,0 +1,106 @@
+[gd_scene load_steps=8 format=3 uid="uid://bxc5t1bj2oc2r"]
+
+[ext_resource type="Texture2D" uid="uid://404s53624vvo" path="res://art/playerGrey_up1.png" id="1_hqtel"]
+[ext_resource type="Texture2D" uid="uid://chuufr3180wl" path="res://art/playerGrey_up2.png" id="2_sweqy"]
+[ext_resource type="Texture2D" uid="uid://s3dg3sgpjcln" path="res://art/playerGrey_walk1.png" id="3_2hs0m"]
+[ext_resource type="Texture2D" uid="uid://b2brhf4j37bpn" path="res://art/playerGrey_walk2.png" id="4_1jxqw"]
+
+[sub_resource type="GDScript" id="GDScript_hqtel"]
+resource_name = "res://player.gd"
+script/source = "extends Area2D
+signal hit
+
+@export var speed = 400 # How fast the player will move (pixels/sec).
+var screen_size # Size of the game window.
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	screen_size = get_viewport_rect().size
+	hide()
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	var velocity = Vector2.ZERO # The player's movement vector.
+	if Input.is_action_pressed(\"move_right\"):
+		velocity.x += 1
+	if Input.is_action_pressed(\"move_left\"):
+		velocity.x -= 1
+	if Input.is_action_pressed(\"move_down\"):
+		velocity.y += 1
+	if Input.is_action_pressed(\"move_up\"):
+		velocity.y -= 1
+
+	if velocity.length() > 0:
+		velocity = velocity.normalized() * speed
+		$AnimatedSprite2D.play()
+	else:
+		$AnimatedSprite2D.stop()
+		
+	position += velocity * delta
+	position = position.clamp(Vector2.ZERO, screen_size)
+	
+	$AnimatedSprite2D.flip_v = velocity.y > 0
+	if velocity.x != 0:
+		$AnimatedSprite2D.animation = \"walk\"
+		$AnimatedSprite2D.flip_h = velocity.x < 0
+	elif velocity.y != 0:
+		$AnimatedSprite2D.animation = \"up\"
+	
+
+
+func _on_body_entered(body: Node2D) -> void:
+	hide() # Player disappears after being hit.
+	hit.emit()
+	# Must be deferred as we can't change physics properties on a physics callback.
+	$CollisionShape2D.set_deferred(\"disabled\", true)
+	
+func start(pos):
+	position = pos
+	show()
+	$CollisionShape2D.disabled = false
+"
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_dw050"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_hqtel")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_sweqy")
+}],
+"loop": true,
+"name": &"up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_2hs0m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_1jxqw")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_hqtel"]
+points = PackedVector2Array(28, 0, 26, 7, 22, 14, 20, 16, 27, 23, 27, 27, 25, 30, 21, 29, 13, 21, 8, 23, 0, 24, -7, 23, -12, 21, -21, 29, -25, 29, -28, 26, -26, 22, -19, 15, -25, 7, -26, 0, -26, -7, -24, -14, -20, -20, -14, -26, -7, -29, 0, -30, 9, -29, 16, -25, 21, -21, 24, -16, 27, -10)
+
+[node name="Player" type="Area2D"]
+script = SubResource("GDScript_hqtel")
+metadata/_edit_group_ = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_dw050")
+animation = &"up"
+frame = 1
+frame_progress = 0.0390719
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("ConvexPolygonShape2D_hqtel")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
