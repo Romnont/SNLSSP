@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://c441cjospd5bx"]
+
+[ext_resource type="Script" uid="uid://ch4tu7d2ut8sn" path="res://Scripts/node_2d.gd" id="1_rjfhe"]
+[ext_resource type="PackedScene" uid="uid://bdybp8vymsbf1" path="res://character_body_2d.tscn" id="2_4d1w0"]
+
+[node name="MapaBase" type="Node2D"]
+script = ExtResource("1_rjfhe")
+
+[node name="CharacterBody2D" parent="." instance=ExtResource("2_4d1w0")]
+
+[node name="CollisionShape2D" parent="CharacterBody2D" index="0"]
+position = Vector2(0, 0)
+
+[node name="AnimatedSprite2D" parent="CharacterBody2D" index="2"]
+position = Vector2(nan, nan)
+
+[node name="Sprite2D" parent="CharacterBody2D" index="3"]
+position = Vector2(0, 0)
+scale = Vector2(0.155518, 0.179989)
+
+[editable path="CharacterBody2D"]
