@@ -19,6 +19,12 @@ config/features=PackedStringArray("4.4", "Forward Plus")
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 
+[file_customization]
+
+folder_colors={
+"res://example_james/assets/enemy/": "red"
+}
+
 [input]
 
 zoom_in={
